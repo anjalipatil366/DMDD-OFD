@@ -69,8 +69,7 @@ BEGIN
 END;
 /
 
-select * from Products_PROC;
-/
+
 
 CREATE OR REPLACE PROCEDURE update_supplier (
     s_id IN OUT VARCHAR2,
@@ -119,8 +118,6 @@ BEGIN
 END;
 /
 
-SELECT * FROM supplier_proc;
-/
 
 
 
