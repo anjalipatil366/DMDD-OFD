@@ -1,95 +1,3 @@
-create table supplier_proc (
-supplier_id varchar(10) PRIMARY KEY,
-supplier_name varchar(50) NOT NULL, 
-city varchar(50),
-phone number(10) NOT NULL
-)
-/
-create table category_proc (
-category_id varchar(10) PRIMARY KEY, 
-category_name varchar(50) DEFAULT 'General'
-)
-/
-create table Products_PROC(
-product_id varchar(10) PRIMARY KEY,
-product_name varchar(50) NOT NULL, 
-product_price number(10, 2) NOT NULL, 
-product_quantity number(10) NOT NULL, 
-supplier_id varchar(10) REFERENCES supplier_proc(supplier_id),
-category_id varchar(10) REFERENCES category_proc(category_id)
-);
-/
-create table customer_proc (
-customer_id varchar(10) constraint cpk PRIMARY KEY, 
-first_name varchar(40) NOT NULL, 
-last_name varchar(40),
-email varchar(100) unique,
-ssn number(10), 
-city varchar(40)
-)
-/
-create table orders_proc(
-order_id varchar(10) constraint opk PRIMARY KEY, 
-date_of_purchase DATE DEFAULT SYSDATE, 
-customer_id varchar(10) references customer_proc(customer_id),
-payment_type varchar(40) CHECK(payment_type in ('Debit_Card', 'Credit_Card','Gift_Card'))
-)
-/
-
-create table order_details_proc (
-order_details_id VARCHAR(10) constraint odpk PRIMARY KEY,
-quantity number(10) NOT NULL,
-product_id varchar(10) REFERENCES products_proc(product_id),
-order_id varchar(10) REFERENCES orders_proc(order_id),
-status varchar(40),
-constraint cst CHECK(status in ('Completed', 'Cancelled', 'Confirmed')))
-/
-
-insert into supplier_proc (supplier_id ,supplier_name,city ,phone)
-    select 'S101', 'home goods', 'Boston', 8574522785 from dual union all
-    select 'S102', 'Wells furniture','Seattle',8887772222 from dual union all
-    select 'S103', 'May Works','Portland',8887773333 from dual union all
-    select 'S104', 'Kirchen Aid','Austin',8887774444 from dual union all
-    select 'S105', 'Simple Modern ','Fermont',8887775555 from dual;
-
-
-
-insert into category_proc (category_id, category_name)
-    select 'CT101', 'living room' from dual union all
-    select 'CT102', 'Organization' from dual union all
-    select 'CT103', ' Bedding' from dual union all
-    select 'CT104', 'Cleaning Appliances' from dual union all
-    select 'CT105', 'Kitchen Appliances' from dual union all
-    select 'CT106', 'Home Appliances' from dual;
-
-
-
-insert into Products_PROC(PRODUCT_ID, PRODUCT_NAME, PRODUCT_PRICE, PRODUCT_QUANTITY, SUPPLIER_ID, CATEGORY_ID)
-    select 'P101', 'Upholstered Sofa', 885.99, 50, 'S102', 'CT102' FROM DUAL UNION ALL
-    select 'P102', 'Futon', 437.99, 50, 'S102', 'CT102' FROM DUAL UNION ALL 
-    select 'P103', 'Coffee Table', 253.99, 40, 'S102', 'CT104' FROM DUAL UNION ALL 
-    select 'P104', 'Bookcase', 178.99, 40, 'S102', 'CT106' FROM DUAL UNION ALL 
-    select 'P105', '3 Drawer Cabinet', 124.99, 25, 'S102', 'CT105' FROM DUAL;
-    
-    
-insert into orders_proc(order_id ,date_of_purchase ,customer_id ,payment_type)
-    select 'O101','02/April/2023', 'C101', 'Credit_Card' FROM DUAL UNION ALL
-    select 'O102','28/January/2023', 'C101','Credit_Card' FROM DUAL UNION ALL
-    select 'O103','02/February/2023', 'C101','Credit_Card' FROM DUAL UNION ALL
-    select 'O104','03/January/2023', 'C102','Credit_Card' FROM DUAL UNION ALL
-    select 'O105','02/February/2023', 'C102','Credit_Card' FROM DUAL UNION ALL
-    select 'O106','28/February/2023', 'C102','Credit_Card' FROM DUAL ;
-    
-insert into order_details_proc(order_details_id ,quantity ,product_id ,order_id,status)
-    select 'OD102',2, 'P102','O101','Completed' FROM DUAL UNION ALL
-    select 'OD103',2, 'P103','O102','Completed' FROM DUAL UNION ALL
-    select 'OD104',2, 'P104','O103','Cancelled' FROM DUAL UNION ALL
-    select 'OD105',2, 'P107','O103','Cancelled' FROM DUAL UNION ALL
-    select 'OD106',1, 'P106','O103','Cancelled' FROM DUAL UNION ALL
-    
-SELECT * from Products_PROC;
-
-
 CREATE OR REPLACE PROCEDURE update_product (
     p_id IN OUT VARCHAR2,
     p_name IN VARCHAR2,
@@ -129,7 +37,7 @@ BEGIN
     END IF;
     
     -- Update the product information
-    UPDATE Products_PROC
+    UPDATE OFD_PRODUCTS
     SET 
         product_name = p_name_camel,
         product_price = p_price,
@@ -161,8 +69,8 @@ BEGIN
 END;
 /
 
-select * from Products_PROC;
-/
+
+
 
 CREATE OR REPLACE PROCEDURE update_supplier (
     s_id IN OUT VARCHAR2,
@@ -194,7 +102,7 @@ BEGIN
     v_city_camel_case := INITCAP(s_city);
     
     -- Update the supplier
-    UPDATE supplier_proc
+    UPDATE OFD_SUPPLIER
     SET 
         supplier_name = v_name_camel_case,
         city = v_city_camel_case,
@@ -245,7 +153,7 @@ BEGIN
     v_category_name := INITCAP(p_category_name);
 
     -- Update the record in the table
-    UPDATE category_proc
+    UPDATE OFD_CATEGORY
     SET category_name = v_category_name
     WHERE category_id = p_category_id;
     
@@ -266,6 +174,3 @@ BEGIN
     COMMIT;
 END;
 /
-
-select * from category_proc;
-
