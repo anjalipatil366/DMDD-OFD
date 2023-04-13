@@ -144,7 +144,7 @@ grant select on ofd_category to ofd_supplier;
  
 ---Procedure Access
 
-grant execute on update_supplier to ofd_supplier;
+---grant execute on update_supplier to ofd_supplier;
 
 ---Customer User Permission 
 
@@ -156,8 +156,8 @@ grant select on ofd_order_details to ofd_customer;
 
 ---Procedure Access
 
-grant execute on generate_bill to ofd_customer;
-grant execute on update_customer to ofd_supplier;
+---grant execute on generate_bill to ofd_customer;
+---grant execute on update_customer to ofd_supplier;
 
 
 -------------------------------------------------------------------VIEWS CREATED 
@@ -186,9 +186,6 @@ join ofd_customer c on o.customer_id = c.customer_id
 join ofd_order_details od on o.order_id = od.order_id
 join ofd_products p on od.product_id = p.product_id;
 
-grant select on ofd_orders_summary to ofd_customer_01; 
-grant select on ofd_orders_summary to ofd_customer_02; 
-grant select on ofd_orders_summary to ofd_customer_03; 
 
 ---Out_of_stock_products: This view lists all products that are currently out of stock.  
 
@@ -198,9 +195,6 @@ from ofd_products p
 join ofd_supplier s on p.supplier_id = s.supplier_id
 join ofd_category ct on p.category_id = ct.category_id)
 where unit_in_stock = 0;
-
-grant select on ofd_out_of_stock_products to ofd_supplier_01; 
-grant select on ofd_out_of_stock_products to ofd_supplier_02; 
 
 
 ---Average_Order_Value: This view provides the average order value over the last week
