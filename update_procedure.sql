@@ -8,6 +8,7 @@ CREATE OR REPLACE PROCEDURE update_product (
 )
 AS
     p_name_camel VARCHAR2(100);
+    v_product_count NUMBER;
 BEGIN
     -- Check if p_id starts with "p"
     IF (p_id NOT LIKE 'P%') THEN
@@ -24,7 +25,7 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20003, 'Category ID should start with "CT".');
     END IF;
     
-   -- Convert p_name to camel case
+    -- Convert p_name to camel case
     p_name_camel := INITCAP(p_name);
     
     -- Check if quantity and price are greater than or equal to zero
@@ -34,6 +35,15 @@ BEGIN
     
     IF (p_price < 0) THEN
         RAISE_APPLICATION_ERROR(-20005, 'Price cannot be less than zero.');
+    END IF;
+    
+    -- Check if the product_id exists
+    SELECT COUNT(*) INTO v_product_count
+    FROM OFD_PRODUCTS
+    WHERE product_id = p_id;
+    
+    IF (v_product_count = 0) THEN
+        RAISE_APPLICATION_ERROR(-20006, 'Product ID does not exist.');
     END IF;
     
     -- Update the product information
@@ -47,28 +57,9 @@ BEGIN
     WHERE product_id = p_id;
     
     COMMIT;
+    DBMS_OUTPUT.PUT_LINE('Product updated successfully.');
 END;
 /
-
-
-DECLARE
-    v_product_id VARCHAR2(10):= 'P101';
-    v_supplier_id VARCHAR2(10) := 'S102';
-    v_category_id VARCHAR2(10) := 'CT104';
-BEGIN
-    UPDATE_PRODUCT(
-        p_id => v_product_id,
-        p_name => 'NAME PRODCUT',
-        p_price => 9.99,
-        p_quantity => 50,
-        p_supplier_id => v_supplier_id,
-        p_category_id => v_category_id
-    );
-    
-    DBMS_OUTPUT.PUT_LINE('Product ID: ' || v_product_id);
-END;
-/
-
 
 
 CREATE OR REPLACE PROCEDURE update_supplier (
@@ -120,20 +111,6 @@ END;
 
 
 
-
-DECLARE
-    supplier_id VARCHAR2(10) := 'S101';
-    supplier_name VARCHAR2(100) := 'new supplier name';
-    city VARCHAR2(50) := 'New York';
-    phone NUMBER := 1231234123 ;
-
-BEGIN
-    update_supplier(s_id => supplier_id, s_name => supplier_name, s_city => city, s_phone => phone);
-    COMMIT;
-END;
-/
-
-
 CREATE OR REPLACE PROCEDURE update_category (
     p_category_id IN VARCHAR2,
     p_category_name IN VARCHAR2
@@ -163,11 +140,3 @@ EXCEPTION
 END;
 /
 
-DECLARE
-    category_id VARCHAR2(10) := 'CT102';
-    category_name VARCHAR2(100) := 'new test category';
-BEGIN
-    update_category(p_category_id => category_id, p_category_name => category_name);
-    COMMIT;
-END;
-/
