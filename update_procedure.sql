@@ -82,10 +82,7 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20001, 'Supplier ID should start with "S".');
     END IF;
     
-    -- Convert supplier_name and city to camel case
-    --SELECT INITCAP(REPLACE(p_name, ' ', '')) INTO v_name_camel_case FROM dual;
-    --SELECT INITCAP(REPLACE(p_city, ' ', '')) INTO v_city_camel_case FROM dual;
-    
+ 
      
    -- Convert p_name to camel case
     v_name_camel_case := INITCAP(s_name);
